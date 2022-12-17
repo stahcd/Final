@@ -1,0 +1,340 @@
+---
+title: "MA615 Final Project"
+author: "Tong Sun"
+date: "2022-12-17"
+output:
+  pdf_document:
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(vroom)
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+library(gridExtra)
+library(grid)
+```
+
+# Data
+
+```{r, include=FALSE}
+HR21Q4 <- vroom("HRTravelTimesQ4_21.csv")  ## orange, blue, red
+LR21Q4 <- vroom("LRTravelTimesQ4_21.csv")  ## Green-BCDE, Mattapan
+HR22Q1 <- vroom("2022-Q1_HRTravelTimes.csv")
+LR22Q1 <- vroom("2022-Q1_LRTravelTimes.csv")
+HR22Q2 <- vroom("2022-Q2_HRTravelTimes.csv")
+LR22Q2 <- vroom("2022-Q2_LRTravelTimes.csv")
+HR22Q3 <- vroom("2022-Q3_HRTravelTimes.csv")
+LR22Q3 <- vroom("2022-Q3_LRTravelTimes.csv")
+```
+
+
+```{r, echo=FALSE}
+## Nov
+HRNov8_14 <- HR21Q4 %>% 
+  filter(service_date == "2021-11-08"|service_date == "2021-11-09"| 
+           service_date == "2021-11-10"|service_date == "2021-11-11"| 
+           service_date == "2021-11-12"|service_date == "2021-11-13"| service_date == "2021-11-14")
+UHRNov8_14 <- HRNov8_14 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+LRNov8_14 <- LR21Q4 %>% 
+  filter(service_date == "2021-11-08"|service_date == "2021-11-09"| 
+           service_date == "2021-11-10"|service_date == "2021-11-11"| 
+           service_date == "2021-11-12"|service_date == "2021-11-13"| service_date == "2021-11-14")
+ULRNov8_14 <- LRNov8_14 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+Nov8_14 <- rbind(UHRNov8_14, ULRNov8_14)
+
+
+## Dec
+HRDec6_12 <- HR21Q4 %>% 
+  filter(service_date == "2021-12-06"|service_date == "2021-12-07"| 
+           service_date == "2021-12-08"|service_date == "2021-12-09"| 
+           service_date == "2021-12-10"|service_date == "2021-12-11"| service_date == "2021-12-12")
+UHRDec6_12 <- HRDec6_12 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+LRDec6_12 <- LR21Q4 %>% 
+  filter(service_date == "2021-12-06"|service_date == "2021-12-07"| 
+           service_date == "2021-12-08"|service_date == "2021-12-09"| 
+           service_date == "2021-12-10"|service_date == "2021-12-11"| service_date == "2021-12-12")
+ULRDec6_12 <- LRDec6_12 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+Dec6_12 <- rbind(UHRDec6_12, ULRDec6_12)
+
+
+## Jan
+HRJan3_9 <- HR22Q1 %>% 
+  filter(service_date == "2022-01-03"| service_date == "2022-01-04"|
+           service_date == "2022-01-05"| service_date == "2022-01-06"|
+           service_date == "2022-01-07"| service_date == "2022-01-08"|service_date == "2022-01-09")
+UHRJan3_9 <- HRJan3_9 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+LRJan3_9 <- LR22Q1 %>% 
+  filter(service_date == "2022-01-03"| service_date == "2022-01-04"|
+           service_date == "2022-01-05"| service_date == "2022-01-06"|
+           service_date == "2022-01-07"| service_date == "2022-01-08"|service_date == "2022-01-09")
+ULRJan3_9 <- LRJan3_9 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+Jan3_9 <- rbind(UHRJan3_9, ULRJan3_9)
+
+
+## Feb
+HRFeb7_13 <- HR22Q1 %>% 
+  filter(service_date == "2022-02-07"| service_date == "2022-02-08"|
+           service_date == "2022-02-09"| service_date == "2022-02-10"|
+           service_date == "2022-02-11"|service_date == "2022-02-12"|service_date == "2022-02-13")
+UHRFeb7_13 <- HRFeb7_13 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+LRFeb7_13 <- LR22Q1 %>% 
+  filter(service_date == "2022-02-07"| service_date == "2022-02-08"|
+           service_date == "2022-02-09"| service_date == "2022-02-10"|
+           service_date == "2022-02-11"|service_date == "2022-02-12"|service_date == "2022-02-13")
+ULRFeb7_13 <- LRFeb7_13 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+Feb7_13 <- rbind(UHRFeb7_13, ULRFeb7_13)
+
+
+## Mar
+HRMar7_13 <- HR22Q1 %>% 
+  filter(service_date == "2022-03-07"| service_date == "2022-03-08"|
+           service_date == "2022-03-09"| service_date == "2022-03-10"|
+           service_date == "2022-03-11"|service_date == "2022-03-12"|service_date == "2022-03-13")
+UHRMar7_13 <- HRMar7_13 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+LRMar7_13 <- LR22Q1 %>% 
+  filter(service_date == "2022-03-07"| service_date == "2022-03-08"|
+           service_date == "2022-03-09"| service_date == "2022-03-10"|
+           service_date == "2022-03-11"|service_date == "2022-03-12"|service_date == "2022-03-13")
+ULRMar7_13 <- LRMar7_13 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+Mar7_13 <- rbind(UHRMar7_13, ULRMar7_13)
+
+
+
+## Apr
+HRApr4_10 <- HR22Q2 %>% 
+  filter(service_date == "2022-04-04"| service_date == "2022-04-05"|
+           service_date == "2022-04-06"| service_date == "2022-04-07"|
+           service_date == "2022-04-08"| service_date == "2022-04-09"|service_date == "2022-04-10")
+UHRApr4_10 <- HRApr4_10 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+LRApr4_10 <- LR22Q2 %>% 
+  filter(service_date == "2022-04-04"| service_date == "2022-04-05"|
+           service_date == "2022-04-06"| service_date == "2022-04-07"|
+           service_date == "2022-04-08"| service_date == "2022-04-09"|service_date == "2022-04-10")
+ULRApr4_10 <- LRApr4_10 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+Apr4_10 <- rbind(UHRApr4_10, ULRApr4_10)
+
+
+## May
+HRMay2_8 <- HR22Q2 %>% 
+  filter(service_date == "2022-05-02"| service_date == "2022-05-03"|
+           service_date == "2022-05-04"| service_date == "2022-05-05"|
+           service_date == "2022-05-06"| service_date == "2022-05-07"|service_date == "2022-05-08")
+UHRMay2_8 <- HRMay2_8 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+LRMay2_8 <- LR22Q2 %>% 
+  filter(service_date == "2022-05-02"| service_date == "2022-05-03"|
+           service_date == "2022-05-04"| service_date == "2022-05-05"|
+           service_date == "2022-05-06"| service_date == "2022-05-07"|service_date == "2022-05-08")
+ULRMay2_8 <- LRMay2_8 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+May2_8 <- rbind(UHRMay2_8, ULRMay2_8)
+
+
+## Jun
+HRJun6_12 <- HR22Q2 %>% 
+  filter(service_date == "2022-06-06"| service_date == "2022-06-07"|
+           service_date == "2022-06-08"| service_date == "2022-06-09"|
+           service_date == "2022-06-10"| service_date == "2022-06-11"|service_date == "2022-06-12")
+UHRJun6_12 <- HRJun6_12 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+LRJun6_12 <- LR22Q2 %>% 
+  filter(service_date == "2022-06-06"| service_date == "2022-06-07"|
+           service_date == "2022-06-08"| service_date == "2022-06-09"|
+           service_date == "2022-06-10"| service_date == "2022-06-11"|service_date == "2022-06-12")
+ULRJun6_12 <- LRJun6_12 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+Jun6_12 <- rbind(UHRJun6_12, ULRJun6_12)
+
+
+## Jul
+HRJul4_10 <- HR22Q3 %>% 
+  filter(service_date == "2022-07-04"| service_date == "2022-07-05"|
+           service_date == "2022-07-06"| service_date == "2022-07-07"|
+           service_date == "2022-07-08"| service_date == "2022-07-09"|service_date == "2022-07-10")
+UHRJul4_10 <- HRJul4_10 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+LRJul4_10 <- LR22Q3 %>% 
+  filter(service_date == "2022-07-04"| service_date == "2022-07-05"|
+           service_date == "2022-07-06"| service_date == "2022-07-07"|
+           service_date == "2022-07-08"| service_date == "2022-07-09"|service_date == "2022-07-10")
+ULRJul4_10 <- LRJul4_10 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+Jul4_10 <- rbind(UHRJul4_10, ULRJul4_10)
+
+
+## Aug
+HRAug1_7 <- HR22Q3 %>% 
+  filter(service_date == "2022-08-01"| service_date == "2022-08-02"|
+           service_date == "2022-08-03"| service_date == "2022-08-04"|
+           service_date == "2022-08-05"| service_date == "2022-08-06"|service_date == "2022-08-07")
+UHRAug1_7 <- HRAug1_7 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+LRAug1_7 <- LR22Q3 %>% 
+  filter(service_date == "2022-08-01"| service_date == "2022-08-02"|
+           service_date == "2022-08-03"| service_date == "2022-08-04"|
+           service_date == "2022-08-05"| service_date == "2022-08-06"|service_date == "2022-08-07")
+ULRAug1_7 <- LRAug1_7 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+Aug1_7 <- rbind(UHRAug1_7, ULRAug1_7)
+
+
+## Sep
+HRSep5_11 <- HR22Q3 %>% 
+  filter(service_date == "2022-09-05"| service_date == "2022-09-06"|
+           service_date == "2022-09-07"| service_date == "2022-09-08"|
+           service_date == "2022-09-09"|service_date == "2022-09-10"|service_date == "2022-09-11")
+UHRSep5_11 <- HRSep5_11 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+LRSep5_11 <- LR22Q3 %>% 
+  filter(service_date == "2022-09-05"| service_date == "2022-09-06"|
+           service_date == "2022-09-07"| service_date == "2022-09-08"|
+           service_date == "2022-09-09"|service_date == "2022-09-10"|service_date == "2022-09-11")
+ULRSep5_11 <- LRSep5_11 %>% distinct(service_date, from_stop_id, to_stop_id, route_id, .keep_all = TRUE)
+Sep5_11 <- rbind(UHRSep5_11, ULRSep5_11)
+
+```
+
+```{r}
+data <- rbind(Nov8_14, Dec6_12, Jan3_9, Feb7_13, Mar7_13, Apr4_10, May2_8, Jul4_10, Jul4_10, Aug1_7, Sep5_11)
+head(data)
+```
+
+
+# Distribution
+```{r}
+unique(data$route_id)
+## "Orange"  
+Orange <- data %>%
+  filter(route_id == "Orange")
+
+## "Blue" 
+Blue <- data %>%
+  filter(route_id == "Blue")
+
+## "Red" 
+Red <- data %>%
+  filter(route_id == "Red")
+
+# ## "Green-B"  
+# Green-B <- data %>%
+#   filter(route_id == "Green-B")
+# 
+# ## "Green-C"  
+# Green-C <- data %>%
+#   filter(route_id == "Green-C")
+# 
+# ## "Green-D"  
+# Green-D <- data %>%
+#   filter(route_id == "Green-D")
+# 
+# ## "Green-E"  
+# Green-E <- data %>%
+#   filter(route_id == "Green-E")
+
+## "Mattapan"
+Mattapan <- data %>%
+  filter(route_id == "Mattapan")
+
+df <- data %>%
+  mutate(month = format(service_date, "%m"), year = format(service_date, "%Y")) %>%
+  group_by(month, year) %>%
+  select(month, year, travel_time_sec, route_id)
+plot0 <- ggplot(df) + 
+  geom_bar(aes(x = month, fill = route_id), position = "fill") + labs(y='propotion')
+plot01 <- ggplot(df) + 
+  geom_bar(aes(x = month, fill = route_id))
+plot02 <- ggplot(data = df, mapping = aes(x = month, y = travel_time_sec, color=year)) +
+  geom_point() +
+  geom_line()+
+  geom_smooth(method = 'loess',formula=y~x)+
+  facet_grid(~route_id)
+grid.arrange(plot0, plot01, plot02, ncol = 2)
+```
+
+
+## Orange
+```{r, echo=FALSE, warning=FALSE}
+df1 <- Orange %>%
+  mutate(month = format(service_date, "%m"), year = format(service_date, "%Y")) %>%
+  group_by(month, year) %>%
+  select(month, year, travel_time_sec)
+plot1 <- ggplot(data = df1, aes(x = month, y = travel_time_sec, fill = year)) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  ylim(min =  0, max = 2500) + 
+  geom_boxplot() +
+  coord_flip() +
+  xlab("month") + ylab("travel time (in sec)") +
+  labs(fill = "date")
+plot2 <- ggplot(df1, aes(x=month, fill = year)) +
+  geom_histogram(stat="count") +
+  xlab("month") + ylab("travel time (in sec)") 
+grid.arrange(plot1, plot2, ncol = 2, top=textGrob("Distribution of Travel Time"))
+
+ggplot(df1, aes(x=month, colour=year)) + geom_density() +
+  labs(title = "Density curve of Travel Time")
+```
+
+
+## Blue
+```{r, echo=FALSE, warning=FALSE}
+df2 <- Blue %>%
+  mutate(month = format(service_date, "%m"), year = format(service_date, "%Y")) %>%
+  group_by(month, year) %>%
+  select(month, year, travel_time_sec)
+plot3 <- ggplot(data = df2, aes(x = month, y = travel_time_sec, fill = year)) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  ylim(min =  0, max = 2500) + 
+  geom_boxplot() +
+  coord_flip() +
+  xlab("month") + ylab("travel time (in sec)") +
+  labs(fill = "date")
+plot4 <- ggplot(df2, aes(x=month, fill = year)) +
+  geom_histogram(stat="count") +
+  xlab("month") + ylab("travel time (in sec)") 
+grid.arrange(plot3, plot4, ncol = 2, top=textGrob("Distribution of Travel Time"))
+
+ggplot(df2, aes(x=month, colour=year)) + geom_density() +
+  labs(title = "Density curve of Travel Time")
+```
+
+
+## Red
+```{r, echo=FALSE, warning=FALSE}
+df3 <- Red %>%
+  mutate(month = format(service_date, "%m"), year = format(service_date, "%Y")) %>%
+  group_by(month, year) %>%
+  select(month, year, travel_time_sec)
+plot5 <- ggplot(data = df3, aes(x = month, y = travel_time_sec, fill = year)) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  ylim(min =  0, max = 2500) + 
+  geom_boxplot() +
+  coord_flip() +
+  xlab("month") + ylab("travel time (in sec)") +
+  labs(fill = "date")
+plot6 <- ggplot(df3, aes(x=month, fill = year)) +
+  geom_histogram(stat="count") +
+  xlab("month") + ylab("travel time (in sec)") 
+grid.arrange(plot5, plot6, ncol = 2, top=textGrob("Distribution of Travel Time"))
+
+ggplot(df3, aes(x=month, colour=year)) + geom_density() +
+  labs(title = "Density curve of Travel Time")
+```
+
+
+## Mattapan
+```{r, echo=FALSE, warning=FALSE}
+df4 <- Mattapan %>%
+  mutate(month = format(service_date, "%m"), year = format(service_date, "%Y")) %>%
+  group_by(month, year) %>%
+  select(month, year, travel_time_sec)
+plot7 <- ggplot(data = df4, aes(x = month, y = travel_time_sec, fill = year)) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  ylim(min =  0, max = 2500) + 
+  geom_boxplot() +
+  coord_flip() +
+  xlab("month") + ylab("travel time (in sec)") +
+  labs(fill = "date")
+plot8 <- ggplot(df4, aes(x=month, fill = year)) +
+  geom_histogram(stat="count") +
+  xlab("month") + ylab("travel time (in sec)") 
+grid.arrange(plot7, plot8, ncol = 2, top=textGrob("Distribution of Travel Time"))
+
+ggplot(df4, aes(x=month, colour=year)) + geom_density() +
+  labs(title = "Density curve of Travel Time")
+```
+
+
